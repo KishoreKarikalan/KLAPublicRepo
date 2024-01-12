@@ -13,8 +13,8 @@ float extract(string s){
 
 int main(){
     #ifndef ONLINE_JUDGE
-        freopen("Input/TestCase1.txt","r",stdin);
-        freopen("TestCase1.txt","w",stdout);
+        freopen("Input/TestCase3.txt","r",stdin);
+        freopen("TestCase3.txt","w",stdout);
     #endif
     string s;
     float diameter,points,angle;
