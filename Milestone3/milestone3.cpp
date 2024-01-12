@@ -58,12 +58,12 @@ vector<float> extractSize(string s){
     return res;
 }
 
-void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis){
+void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis,int val,int diePerRecticle){
 
     if(vis.count({i,j}))
         return;
     vis.insert({i,j});
-
+    
     float actualDistance = sqrt(pow(shift[0]+x,2)+pow(shift[1]+y,2));
     float actualDistance1 = sqrt(pow(shift[0]+x+sizex,2)+pow(shift[1]+y,2));
     float diagPointDistance = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2))),2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
@@ -72,15 +72,22 @@ void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float s
         cout<<'('<<i<<','<<j<<"):("<<shift[0]+x<<','<<shift[1]+y<<')'<<endl;
 
         for(auto v:directions){
-            solve(i+v[0],j+v[1],x+v[0]*sizex,y+v[1]*sizey,shift,radius,sizex,sizey,directions,vis);
+            int tempx = x+v[0]*sizex;
+            if(i%2 == 0)
+                tempx += (int)i/2*val;
+            int tempy = y+v[1]*sizey;
+            if(j%2 == 0)
+                tempy += (int)j/2*val;
+            
+            solve(i+v[0],j+v[1],tempx,tempy,shift,radius,sizex,sizey,directions,vis,val,diePerRecticle);
         }
     }
 }
 
 int main(){
     #ifndef ONLINE_JUDGE
-        freopen("Input/TestCase3.txt","r",stdin);
-        freopen("TestCase3.txt","w",stdout);
+        freopen("Input/TestCase1.txt","r",stdin);
+        freopen("TestCase1.txt","w",stdout);
     #endif
 
     string s;
@@ -92,7 +99,7 @@ int main(){
     
     sizex = size[0];
     sizey = size[1];
-    
+
     cin>>s;
     vector<float> shift = extractCoord(s);
     
@@ -104,10 +111,19 @@ int main(){
 
     shift[0] = diex;
     shift[1] = diey;
+
+    cin>>s;
+    vector<float> dieStreet = extractCoord(s);
+
+    cin>>s;
+    vector<float> recticleStreet = extractCoord(s);
+
+    cin>>s;
+    vector<float> diePerRecticle = extractSize(s);
     
-    vector<vector<float>> directions = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+    vector<vector<float>> directions = {{-1,0},{0,-1},{0,1},{1,0}};
     set<pair<int,int>> vis;
     
-    solve(0,0,0,0,shift,diameter/2,sizex,sizey,directions,vis);
+    solve(0,0,0,0,shift,diameter/2,sizex+dieStreet[0],sizey+dieStreet[1],directions,vis,recticleStreet[0],diePerRecticle[0]);
     
 }
