@@ -50,7 +50,7 @@ vector<float> extractSize(string s){
     return res;
 }
 
-void solve(int i,int j,int x,int y,vector<float>& shift,float radius,int sizex,int sizey,vector<vector<int>>& directions,set<pair<int,int>>& vis){
+void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis){
 
     if(vis.count({i,j}))
         return;
@@ -69,8 +69,8 @@ void solve(int i,int j,int x,int y,vector<float>& shift,float radius,int sizex,i
 
 int main(){
     #ifndef ONLINE_JUDGE
-        freopen("Input/TestCase4.txt","r",stdin);
-        freopen("TestCase4.txt","w",stdout);
+        freopen("Input/TestCase1.txt","r",stdin);
+        freopen("TestCase1.txt","w",stdout);
     #endif
 
     string s;
@@ -91,8 +91,11 @@ int main(){
 
     diex = die[0]-sizex/2;
     diey = die[1]-sizey/2;
+
+    shift[0] = diex;
+    shift[1] = diey;
     
-    vector<vector<int>> directions = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,0},{0,1},{1,-1},{1,0},{1,1}};
+    vector<vector<float>> directions = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,0},{0,1},{1,-1},{1,0},{1,1}};
     set<pair<int,int>> vis;
     
     solve(0,0,0,0,shift,diameter/2,sizex,sizey,directions,vis);
