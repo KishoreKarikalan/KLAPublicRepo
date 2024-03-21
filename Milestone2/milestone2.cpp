@@ -1,4 +1,10 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <queue>
+#include <set>
+#include <utility>
+#include <fstream>
 
 using namespace std;
 
@@ -58,29 +64,42 @@ vector<float> extractSize(string s){
     return res;
 }
 
-void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis){
+void solve(float x,float y,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis){
 
-    if(vis.count({i,j}))
-        return;
-    vis.insert({i,j});
+    queue<pair<int,int>> q;
+    q.push({0,0});
 
-    float actualDistance = sqrt(pow(shift[0]+x,2)+pow(shift[1]+y,2));
-    float actualDistance1 = sqrt(pow(shift[0]+x+sizex,2)+pow(shift[1]+y,2));
-    float diagPointDistance = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2))),2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
-    float diagPointDistance1 = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2)))-sizex,2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
-    if(actualDistance<radius || diagPointDistance<radius || diagPointDistance1<radius || actualDistance1<radius){
-        cout<<'('<<i<<','<<j<<"):("<<shift[0]+x<<','<<shift[1]+y<<')'<<endl;
+    while(!q.empty()){
+        auto curr = q.front();
+        q.pop();
+        int i = curr.first;
+        int j = curr.second;
 
-        for(auto v:directions){
-            solve(i+v[0],j+v[1],x+v[0]*sizex,y+v[1]*sizey,shift,radius,sizex,sizey,directions,vis);
+        if(vis.count({i,j}))
+            continue;
+        vis.insert({i,j});
+
+        float bottomLeft = sqrt(pow(x+i*sizex,2) + pow(y+j*sizey,2));
+        float bottomRight = sqrt(pow(x+(i+1)*sizex,2) + pow(y+j*sizey,2));
+        float topLeft = sqrt(pow(x+i*sizex,2) + pow(y+(j+1)*sizey,2));
+        float topRight = sqrt(pow(x+(i+1)*sizex,2) + pow(y+(j+1)*sizey,2));
+        
+        if(bottomLeft<radius || bottomRight<radius || topLeft<radius || topRight<radius){
+            cout<<'('<<i<<','<<j<<"):("<<x+i*sizex<<','<<y+j*sizey<<')'<<endl;
+            
+            for(auto v:directions){
+                int newi = i+v[0];
+                int newj = j+v[1];
+                q.push({newi,newj});
+            }
         }
     }
 }
 
 int main(){
     #ifndef ONLINE_JUDGE
-        freopen("Input/TestCase3.txt","r",stdin);
-        freopen("TestCase3.txt","w",stdout);
+        freopen("Input/TestCase4.txt","r",stdin);
+        freopen("TestCase4.txt","w",stdout);
     #endif
 
     string s;
@@ -105,9 +124,10 @@ int main(){
     shift[0] = diex;
     shift[1] = diey;
     
-    vector<vector<float>> directions = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+    vector<vector<float>> directions = {{-1,0},{0,-1},{0,1},{1,0}};
     set<pair<int,int>> vis;
     
-    solve(0,0,0,0,shift,diameter/2,sizex,sizey,directions,vis);
+    solve(diex,diey,diameter/2,sizex,sizey,directions,vis);
     
+    return 0;
 }

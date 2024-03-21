@@ -58,31 +58,70 @@ vector<float> extractSize(string s){
     return res;
 }
 
-void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis,int val,int diePerRecticle){
+// void solve(int i,int j,float x,float y,vector<float>& shift,float radius,float sizex,float sizey,vector<vector<float>>& directions,set<pair<int,int>>& vis,int val,int diePerRecticle){
 
-    if(vis.count({i,j}))
-        return;
-    vis.insert({i,j});
+//     if(vis.count({i,j}))
+//         return;
+//     vis.insert({i,j});
     
-    float actualDistance = sqrt(pow(shift[0]+x,2)+pow(shift[1]+y,2));
-    float actualDistance1 = sqrt(pow(shift[0]+x+sizex,2)+pow(shift[1]+y,2));
-    float diagPointDistance = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2))),2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
-    float diagPointDistance1 = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2)))-sizex,2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
-    if(actualDistance<radius || diagPointDistance<radius || diagPointDistance1<radius || actualDistance1<radius){
-        cout<<'('<<i<<','<<j<<"):("<<shift[0]+x<<','<<shift[1]+y<<')'<<endl;
+//     float actualDistance = sqrt(pow(shift[0]+x,2)+pow(shift[1]+y,2));
+//     float actualDistance1 = sqrt(pow(shift[0]+x+sizex,2)+pow(shift[1]+y,2));
+//     float diagPointDistance = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2))),2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
+//     float diagPointDistance1 = sqrt(pow(shift[0]+(x+sqrt(pow(sizex,2)+pow(sizey,2)))-sizex,2)+pow(shift[1]+(y+sqrt(pow(sizex,2)+pow(sizey,2))),2));
+//     if(actualDistance<radius || diagPointDistance<radius || diagPointDistance1<radius || actualDistance1<radius){
+//         cout<<'('<<i<<','<<j<<"):("<<shift[0]+x<<','<<shift[1]+y<<')'<<endl;
 
-        for(auto v:directions){
-            int tempx = x+v[0]*sizex;
-            if(i%2 == 0)
-                tempx += (int)i/2*val;
-            int tempy = y+v[1]*sizey;
-            if(j%2 == 0)
-                tempy += (int)j/2*val;
+//         for(auto v:directions){
+//             int tempx = x+v[0]*sizex;
+//             if(i%2 == 0)
+//                 tempx += (int)i/2*val;
+//             int tempy = y+v[1]*sizey;
+//             if(j%2 == 0)
+//                 tempy += (int)j/2*val;
             
-            solve(i+v[0],j+v[1],tempx,tempy,shift,radius,sizex,sizey,directions,vis,val,diePerRecticle);
+//             solve(i+v[0],j+v[1],tempx,tempy,shift,radius,sizex,sizey,directions,vis,val,diePerRecticle);
+//         }
+//     }
+// }
+
+void solve(float x,float y,float radius,float sizex,float sizey,vector<float>& dieStreet,vector<float>& recticleStreet,vector<float>& diePerRecticle,vector<vector<float>>& directions,set<pair<int,int>>& vis){
+    queue<pair<int,int>> q;
+    unordered_map<string,pair<int,int>> hash;
+    q.push({0,0});
+    hash["00"] = {x,y};
+
+    while(!q.empty()){
+        auto curr = q.front();
+        q.pop();
+        int i = curr.first;
+        int j = curr.second;
+        
+        pair<int,int> llc = hash[to_string(i)+to_string(j)];
+
+        if(vis.count({i,j}))
+            continue;
+        vis.insert({i,j});
+
+        float bottomLeft = sqrt(pow(llc.first,2) + pow(llc.second,2));
+        float bottomRight = sqrt(pow(llc.first+sizex,2) + pow(llc.second,2));
+        float topLeft = sqrt(pow(llc.first,2) + pow(llc.second+sizey,2));
+        float topRight = sqrt(pow(llc.first+sizex,2) + pow(llc.second+sizey,2));
+        
+        if(bottomLeft<radius || bottomRight<radius || topLeft<radius || topRight<radius){
+            cout<<'('<<i<<','<<j<<"):("<<llc.first<<','<<llc.second<<')'<<endl;
+            
+            for(auto v:directions){
+                int newi = i+v[0];
+                int newj = j+v[1];
+                q.push({newi,newj});
+                hash[to_string(newi)+to_string(newj)]={v[0]*dieStreet[0]+llc.first,v[1]*dieStreet[1]+llc.second};
+
+                
+            }
         }
     }
 }
+
 
 int main(){
     #ifndef ONLINE_JUDGE
@@ -124,6 +163,6 @@ int main(){
     vector<vector<float>> directions = {{-1,0},{0,-1},{0,1},{1,0}};
     set<pair<int,int>> vis;
     
-    solve(0,0,0,0,shift,diameter/2,sizex+dieStreet[0],sizey+dieStreet[1],directions,vis,recticleStreet[0],diePerRecticle[0]);
+    solve(diex,diey,diameter/2,sizex,sizey,dieStreet,recticleStreet,diePerRecticle,directions,vis);
     
 }
